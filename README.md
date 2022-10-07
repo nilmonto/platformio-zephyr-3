@@ -16,8 +16,10 @@ platform_packages =
 ```shell
 cd ~/.platformio/packages/framework-zephyr/scripts
 git clone git@github.com:nilmonto/platformio-zephyr-3.git
+rm -rf ~/.platformio/packages/framework-zephyr/_pio
 ```
 
+- copy back *package.json* to framework-zephyr package location.
 - Perform a clean and then a Build command, hopefully it will build
 > A warn about orphan section related to *__device_handles_pass1* happens due to still missing consideration about 3 phase build process done on
 Zephyr 3.x, which considers zephyr_pre0, zephyr_pre1 and zephyr_final process (instead of only zephyr_prebuilt and zephyr_final as up to Zephyr 2.x)
