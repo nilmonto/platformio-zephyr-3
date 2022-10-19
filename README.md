@@ -15,7 +15,7 @@ platform_packages =
 
 ```shell
 cd ~/.platformio/packages/framework-zephyr/scripts
-git clone git@github.com:nilmonto/platformio-zephyr-3.git
+git clone git@github.com:nilmonto/platformio-zephyr-3.git platformio
 rm -rf ~/.platformio/packages/framework-zephyr/_pio
 ```
 
