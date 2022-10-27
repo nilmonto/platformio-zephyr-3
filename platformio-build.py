@@ -364,7 +364,7 @@ def _fix_package_path(module_path):
 def generate_includible_file(source_file):
     cmd = [
         "$PYTHONEXE",
-        '"%s"' % os.path.join(FRAMEWORK_DIR, "scripts", "file2hex.py"),
+        '"%s"' % os.path.join(FRAMEWORK_DIR, "scripts", "build", "file2hex.py"),
         "--file",
         "$SOURCE",
         ">",
@@ -391,7 +391,7 @@ def generate_kobject_files():
 
     cmd = (
         "$PYTHONEXE",
-        '"%s"' % os.path.join(FRAMEWORK_DIR, "scripts", "gen_kobject_list.py"),
+        '"%s"' % os.path.join(FRAMEWORK_DIR, "scripts", "build", "gen_kobject_list.py"),
         "--kobj-types-output",
         os.path.join(
             "$BUILD_DIR", "zephyr", "include", "generated", "kobj-types-enum.h"
@@ -418,7 +418,7 @@ def validate_driver():
 
     cmd = (
         "$PYTHONEXE",
-        '"%s"' % os.path.join(FRAMEWORK_DIR, "scripts", "gen_kobject_list.py"),
+        '"%s"' % os.path.join(FRAMEWORK_DIR, "scripts", "build", "gen_kobject_list.py"),
         "--validation-output",
         driver_header,
         "--include",
@@ -431,7 +431,7 @@ def validate_driver():
 def generate_dev_handles(preliminary_elf_path):
     cmd = (
         "$PYTHONEXE",
-        '"%s"' % os.path.join(FRAMEWORK_DIR, "scripts", "gen_handles.py"),
+        '"%s"' % os.path.join(FRAMEWORK_DIR, "scripts", "build", "gen_handles.py"),
         "--output-source",
         "$TARGET",
         "--kernel",
@@ -461,7 +461,7 @@ def parse_syscalls():
     if not all(os.path.isfile(env.subst(f)) for f in (syscalls_config, struct_tags)):
         cmd = [
             "$PYTHONEXE",
-            '"%s"' % os.path.join(FRAMEWORK_DIR, "scripts", "parse_syscalls.py"),
+            '"%s"' % os.path.join(FRAMEWORK_DIR, "scripts", "build", "parse_syscalls.py"),
             "--include",
             '"%s"' % os.path.join(FRAMEWORK_DIR, "include"),
             "--include",
@@ -496,7 +496,7 @@ def generate_syscall_files(syscalls_json, project_settings):
 
     cmd = [
         "$PYTHONEXE",
-        '"%s"' % os.path.join(FRAMEWORK_DIR, "scripts", "gen_syscalls.py"),
+        '"%s"' % os.path.join(FRAMEWORK_DIR, "scripts", "build", "gen_syscalls.py"),
         "--json-file",
         syscalls_json,
         "--base-output",
@@ -513,6 +513,17 @@ def generate_syscall_files(syscalls_json, project_settings):
         cmd.extend(("--split-type", "k_timeout_t"))
 
     env.Execute(env.VerboseAction(" ".join(cmd), "Generating syscall files"))
+
+
+def generate_error_table():
+
+    cmd = [
+        "$PYTHONEXE",
+        '"%s"' % os.path.join(FRAMEWORK_DIR, "scripts", "build", "gen_strerror_table.py"),
+        '-i', '"%s"' % os.path.join(FRAMEWORK_DIR, "lib", "libc", "minimal", "include", "errno.h"),
+        '-o', '"%s"' % os.path.join("$BUILD_DIR", "zephyr", "include", "generated", "libc", "minimal", "strerror_table.h")
+    ]
+    env.Execute(env.VerboseAction(" ".join(cmd), "Generating error table"))
 
 
 def get_linkerscript_final_cmd(app_includes, base_ld_script):
@@ -844,7 +855,7 @@ def generate_isr_table_file_cmd(preliminary_elf, board_config, project_settings)
 def generate_offset_header_file_cmd():
     cmd = [
         "$PYTHONEXE",
-        '"%s"' % os.path.join(FRAMEWORK_DIR, "scripts", "gen_offset_header.py"),
+        '"%s"' % os.path.join(FRAMEWORK_DIR, "scripts", "build", "gen_offset_header.py"),
         "-i",
         "$SOURCE",
         "-o",
@@ -1279,6 +1290,7 @@ offset_header_file = generate_offset_header_file_cmd()
 generate_version_header_file_cmd()
 syscalls_config = parse_syscalls()
 generate_syscall_files(syscalls_config, project_settings)
+generate_error_table()
 generate_kobject_files()
 validate_driver()
 
